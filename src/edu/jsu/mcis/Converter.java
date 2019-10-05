@@ -67,9 +67,34 @@ public class Converter {
             List<String[]> full = reader.readAll();
             Iterator<String[]> iterator = full.iterator();
             
-            // INSERT YOUR CODE HERE
+            boolean firstLine = true;
+            JSONObject jsonFile = new JSONObject();
+            JSONArray genData = new JSONArray();
+            JSONArray colData = new JSONArray();
+            JSONArray rowData = new JSONArray();
+            JSONArray workData = new JSONArray();
             
-        }        
+            for(String[] set : full){
+                if(firstLine == true){
+                    for(int num = 0; num < 5; num++){
+                        colData.add(set[num]);
+                    }
+                    firstLine = false;
+                }
+                else{
+                    rowData.add(set[0]);
+                    for(int num = 1; num < 5; num++){
+                        workData.add(Integer.parseInt(set[num]));
+                    }
+                    genData.add(workData.clone());
+                    workData.clear();
+                }
+                jsonFile.put("colHeaders", colData);
+                jsonFile.put("rowHeaders", rowData);
+                jsonFile.put("data", genData);
+            }
+            results = jsonFile.toJSONString();
+        }                
         catch(Exception e) { return e.toString(); }
         
         return results.trim();
