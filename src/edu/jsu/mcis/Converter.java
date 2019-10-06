@@ -110,9 +110,51 @@ public class Converter {
             StringWriter writer = new StringWriter();
             CSVWriter csvWriter = new CSVWriter(writer, ',', '"', '\n');
             
-            // INSERT YOUR CODE HERE
+            JSONParser reader = new JSONParser();
+            Object parseObj = reader.parse(jsonString);
+            JSONObject jsonFile = (JSONObject) parseObj;
             
-        }
+            JSONArray colHead;
+            JSONArray rowHead;
+            JSONArray data;     
+            
+            String thisLine = null;
+            
+            String[] workString = null;
+            String[] colString = null;
+            String[] dataString = null;
+            
+            List<String> list = new ArrayList<String>();
+            
+            
+            colHead = (JSONArray) jsonFile.get("colHeaders");
+            rowHead = (JSONArray) jsonFile.get("rowHeaders");
+            data = (JSONArray) jsonFile.get("data");
+            
+            for(int num = 0; num < colHead.size(); num++){
+                list.add(colHead.get(num).toString());
+            }
+            colString = list.toArray(new String[list.size()]);
+            list.clear();
+            csvWriter.writeNext(colString);
+            
+            for(int rowNum = 0; rowNum < rowHead.size(); rowNum++){
+                list.add(rowHead.get(rowNum).toString());
+                thisLine = data.get(rowNum).toString();
+                thisLine = thisLine.replace("[",",").replace("]","");
+                workString = (thisLine.split(","));
+                for(int setNum = 1; setNum < colHead.size(); setNum++){
+                    list.add(workString[setNum]);
+                }
+                dataString = list.toArray(new String[list.size()]);
+                list.clear();
+                csvWriter.writeNext(dataString.clone());
+                dataString = null;
+            }
+            csvWriter.close();
+            
+            results = writer.toString();
+        } 
         
         catch(Exception e) { return e.toString(); }
         
